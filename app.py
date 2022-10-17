@@ -39,10 +39,5 @@ def process_directory(path):
 
   return output
 
-
-# TODO:
-# check if works with symlinks
-# deal with empty environment variable
-
 if __name__ == "__main__":
     app.run()
