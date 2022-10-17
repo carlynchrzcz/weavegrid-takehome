@@ -4,12 +4,14 @@ import os
 
 app = Flask(__name__)
 
+@app.before_first_request
+def set_root_path():
+  if os.environ.get('ROOT_PATH') == '':
+    os.environ['ROOT_PATH'] = os.getcwd()
+
 @app.get('/', defaults={'relative_path': ''})
 @app.get('/<path:relative_path>')
 def get(relative_path):
-    if os.environ.get('ROOT_PATH') == '':
-      os.environ['ROOT_PATH'] = os.getcwd()
-
     path = os.path.join(os.environ.get('ROOT_PATH'), relative_path)
 
     if os.path.isfile(path):
