@@ -7,14 +7,17 @@ app = Flask(__name__)
 @app.get('/', defaults={'relative_path': ''})
 @app.get('/<path:relative_path>')
 def get(relative_path):
-    path = os.path.join(os.environ.get("ROOT_PATH"), relative_path)
+    if os.environ.get('ROOT_PATH') == '':
+      os.environ['ROOT_PATH'] = os.getcwd()
+
+    path = os.path.join(os.environ.get('ROOT_PATH'), relative_path)
 
     if os.path.isfile(path):
       return jsonify(process_file(path))
     elif os.path.isdir(path):
       return jsonify(process_directory(path))
     else:
-      return jsonify({ "message": "File not found" }), 404
+      return jsonify({ 'message': 'File not found' }), 404
 
 def process_file(path):
   with open(path) as f:
@@ -30,14 +33,14 @@ def process_directory(path):
     metadata = {}
     stats = os.stat(os.path.join(path, entry))
 
-    metadata["name"] = entry
-    metadata["owner"] = getpwuid(stats.st_uid).pw_name
-    metadata["size"] = stats.st_size
-    metadata["permissions"] = oct(stats.st_mode)[-3:]
+    metadata['name'] = entry
+    metadata['owner'] = getpwuid(stats.st_uid).pw_name
+    metadata['size'] = stats.st_size
+    metadata['permissions'] = oct(stats.st_mode)[-3:]
 
     output.append(metadata)
 
   return output
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run()
